@@ -48,19 +48,30 @@ namespace TechJobsPersistent.Controllers
 
                 context.Employers.Add(toAdd);
                 context.SaveChanges();
+
+                return Redirect("Index");
             }
-            return View();
-            //Tested this form submission, "add" is coming in null and I 
-            //suspect it is because there is no model imported into the view
-            
-            //Also need to check and see why it is not showing the input validation error messages when I submit invalid
-            //input in the form
+            return View(add);
         }
 
         public IActionResult About(int id)
         {
+            AddEmployerViewModel model;
+            
+            foreach (var employer in context.Employers.ToList())
+            {
+                if (id == employer.Id)
+                {
+                    model = new AddEmployerViewModel
+                    {
+                        Name = employer.Name,
+                        Location = employer.Location
+                    };
 
-
+                    return View(model);
+                }
+            }
+            
             return View();
         }
     }

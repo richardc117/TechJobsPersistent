@@ -1,6 +1,18 @@
-﻿<h1>Employer: Name</h1>
+﻿@using TechJobsPersistent.ViewModels;
+@model AddEmployerViewModel;
 
-<div>
-    <p>Name: name</p>
-    <p>Location: location</p>
-</div>
+@if (Model == null)
+{
+    <h1>There is no employer to show.</h1>
+}
+
+else
+{
+    <h1>Employer: @Model.Name</h1>
+
+    <div>
+        <p>Name: @Model.Name</p>
+        <p>Location: @Model.Location</p>
+    </div>
+}
+
