@@ -22,22 +22,45 @@ namespace TechJobsPersistent.Controllers
             context = dbContext;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(List<Job> jobs)
         {
-            List<Job> jobs = context.Jobs.Include(j => j.Employer).ToList();
+            jobs = context.Jobs.Include(j => j.Employer).ToList();
+            //For some reason this isn't running when I save a new job and come back to index, 
+            //it shows that the list is empty. Had to initialize another list in the ProcessAddForm and pass it here
 
             return View(jobs);
         }
 
-        [HttpGet("/Add")]
-        public IActionResult AddJob()
+        [HttpGet]
+        public IActionResult AddJob(AddJobViewModel model)
         {
-            return View();
+            //***Need to figure out how to get the web app to stop displaying input error message on FIRST load, even before
+            //user submits input
+
+            model = new AddJobViewModel(context.Employers.ToList());
+            
+            return View(model);
         }
 
-        public IActionResult ProcessAddJobForm()
+        [HttpPost("/Home/AddJob")]
+        public IActionResult ProcessAddJobForm(AddJobViewModel model)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                context.Jobs.Add(new Job
+                {
+                    Name = model.Name,
+                    Employer = context.Employers.Find(model.EmployerId)
+                });
+
+                context.SaveChanges();
+
+                var returnList = context.Jobs.Include(j => j.Employer).ToList();
+                return View("Index", returnList);
+            }
+
+            var returnModel = new AddJobViewModel(context.Employers.ToList());
+            return View("AddJob", returnModel);
         }
 
         public IActionResult Detail(int id)
