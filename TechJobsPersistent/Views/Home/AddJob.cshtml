@@ -6,7 +6,7 @@
 <form asp-controller="Home" asp-action="ProcessAddJobForm" method="post">
     <div class="form-group">
         <label>Name</label>
-        <input class="form-control" asp-for="@Model.Name"/>
+        <input class="form-control" asp-for="@Model.Name" />
         <span asp-validation-for="@Model.Name"></span>
     </div>
     <div class="form-group">
@@ -14,6 +14,22 @@
         <select asp-for="EmployerId" asp-items="@Model.Employers"></select>
         <span></span>
         <a asp-controller="Employer" asp-action="Add">Add Employer</a>
+    </div>
+
+    <div class="form-group">
+
+        <div><h2>Skills</h2></div>
+        
+        @foreach (var skill in Model.Skills)
+        {
+            <div>
+                <label>
+                    @skill.Text
+                    <input type="checkbox" name="selectedSkills" value="@skill.Value" />
+                </label>
+            </div>
+        }
+
     </div>
     <input type="submit" value="Add Job" />
 </form>

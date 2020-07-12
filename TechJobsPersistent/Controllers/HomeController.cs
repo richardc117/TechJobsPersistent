@@ -37,29 +37,42 @@ namespace TechJobsPersistent.Controllers
             //***Need to figure out how to get the web app to stop displaying input error message on FIRST load, even before
             //user submits input
 
-            model = new AddJobViewModel(context.Employers.ToList());
+
+            model = new AddJobViewModel(context.Employers.ToList(), context.Skills.ToList());
             
             return View(model);
         }
 
         [HttpPost("/Home/AddJob")]
-        public IActionResult ProcessAddJobForm(AddJobViewModel model)
+        public IActionResult ProcessAddJobForm(AddJobViewModel model, string[] selectedSkills)
         {
             if (ModelState.IsValid)
             {
-                context.Jobs.Add(new Job
+                Job job = new Job
                 {
                     Name = model.Name,
                     Employer = context.Employers.Find(model.EmployerId)
-                });
+                };
 
+                foreach (var skill in selectedSkills)
+                {
+                    context.JobSkills.Add(new JobSkill
+                    {
+                        Job = job,
+                        JobId = job.Id,
+                        Skill = context.Skills.Find(int.Parse(skill)),
+                        SkillId = int.Parse(skill)
+                    });
+                }
+
+                context.Jobs.Add(job);
                 context.SaveChanges();
 
                 var returnList = context.Jobs.Include(j => j.Employer).ToList();
                 return View("Index", returnList);
             }
 
-            var returnModel = new AddJobViewModel(context.Employers.ToList());
+            var returnModel = new AddJobViewModel(context.Employers.ToList(), context.Skills.ToList());
             return View("AddJob", returnModel);
         }
 
